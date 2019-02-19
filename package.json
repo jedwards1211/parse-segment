@@ -1,7 +1,7 @@
 {
-  "name": "es2015-library-skeleton",
+  "name": "parse-segment",
   "version": "0.0.0-development",
-  "description": "my personal ES2015 library project skeleton",
+  "description": "string wrapper that keeps track of its original location in a file",
   "main": "index.js",
   "module": "es/index.js",
   "sideEffects": false,
@@ -48,7 +48,7 @@
     "trailingComma": "es5"
   },
   "config": {
-    "mocha": "-r @babel/register test/configure.js test/**/*.js",
+    "mocha": "-r @babel/register test/configure.js test/*.js test/**/*.js",
     "commitizen": {
       "path": "cz-conventional-changelog"
     }
@@ -65,17 +65,17 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/jedwards1211/es2015-library-skeleton.git"
+    "url": "https://github.com/jedwards1211/parse-segment.git"
   },
   "keywords": [
-    "es2015"
+    "parsing"
   ],
   "author": "Andy Edwards",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/jedwards1211/es2015-library-skeleton/issues"
+    "url": "https://github.com/jedwards1211/parse-segment/issues"
   },
-  "homepage": "https://github.com/jedwards1211/es2015-library-skeleton#readme",
+  "homepage": "https://github.com/jedwards1211/parse-segment#readme",
   "devDependencies": {
     "@babel/cli": "^7.1.5",
     "@babel/core": "^7.1.6",
