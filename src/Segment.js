@@ -7,8 +7,8 @@ type Options = {
   source: any,
   sourceIndex?: ?number,
   sourceSegment?: ?Segment,
-  startLine: number,
-  startCol: number,
+  startLine?: number,
+  startCol?: number,
   _endLine?: number,
   _endCol?: number,
 }
@@ -24,6 +24,7 @@ export default class Segment {
   +endLine: number
   +startCol: number
   +endCol: number
+  +length: number
 
   constructor({
     sourceSegment,
@@ -35,6 +36,8 @@ export default class Segment {
     _endLine,
     _endCol,
   }: Options) {
+    if (startLine == null) startLine = 0
+    if (startCol == null) startCol = 0
     let endLine
     let endCol
     if (_endLine != null && _endCol != null) {
@@ -61,6 +64,12 @@ export default class Segment {
         writable: false,
         configurable: false,
         enumerable: true,
+      },
+      length: {
+        value: value.length,
+        writable: false,
+        configurable: false,
+        enumerable: false,
       },
       sourceSegment: {
         value: sourceSegment,
@@ -104,17 +113,61 @@ export default class Segment {
         configurable: false,
         enumerable: true,
       },
+      [Symbol.toStringTag]: {
+        get(): string {
+          return value
+        },
+        configurable: false,
+        enumerable: false,
+      },
     })
   }
 
   charAt(index: number): Segment {
-    return this.substring(index, Math.min(index + 1, this.value.length))
+    return this.substring(index, Math.min(index + 1, this.length))
+  }
+  charCodeAt(index: number): number {
+    return this.value.charCodeAt(index)
+  }
+  codePointAt(index: number): number {
+    return this.value.codePointAt(index)
+  }
+  endsWith(search: string, length?: number): boolean {
+    return this.value.endsWith(search, length)
+  }
+  indexOf(search: string, fromIndex?: number): number {
+    return this.value.indexOf(search, fromIndex)
+  }
+  includes(search: string, position?: number): boolean {
+    return this.value.includes(search, position)
+  }
+  lastIndexOf(search: string, fromIndex?: number): number {
+    return this.value.lastIndexOf(search, fromIndex)
+  }
+  localeCompare(
+    that: string,
+    locales?: string | Array<string>,
+    options?: Intl$CollatorOptions
+  ): number {
+    return this.value.localeCompare(that, locales, options)
+  }
+  match(regexp: RegExp): RegExp$matchResult | null {
+    return this.value.match(regexp)
+  }
+  search(regexp: RegExp): number {
+    return this.value.search(regexp)
+  }
+  slice(beginIndex: number, endIndex: number = this.length): Segment {
+    return this.substring(
+      beginIndex < 0 ? this.length + beginIndex : beginIndex,
+      endIndex < 0 ? this.length + endIndex : endIndex
+    )
+  }
+  startsWith(search: string, position?: number): boolean {
+    return this.value.startsWith(search, position)
   }
 
-  substring(
-    beginIndex: number,
-    endIndex?: number = this.value.length
-  ): Segment {
+  substring(beginIndex: number, endIndex?: number = this.length): Segment {
     const {
       sourceSegment,
       sourceIndex,
@@ -142,7 +195,7 @@ export default class Segment {
 
     let toIndex = beginIndex
     if (
-      toIndex < value.length &&
+      toIndex < this.length &&
       toIndex > 0 &&
       value.charAt(toIndex) == '\n' &&
       value.charAt(toIndex - 1) == '\r'
@@ -202,6 +255,14 @@ export default class Segment {
     return result
   }
 
+  toString(): string {
+    return this.value
+  }
+
+  valueOf(): string {
+    return this.value
+  }
+
   trimStart(): Segment {
     const startMatch = /^\s*/.exec(this.value)
     return this.substring(
@@ -221,14 +282,6 @@ export default class Segment {
       startMatch ? startMatch.index + startMatch[0].length : 0,
       endMatch ? endMatch.index : this.length
     )
-  }
-
-  toString(): string {
-    return this.value
-  }
-
-  get length(): number {
-    return this.value.length
   }
 
   underlineInContext(): string {

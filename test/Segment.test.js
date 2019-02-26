@@ -1,6 +1,6 @@
 // @flow
 
-import Segment from '../src'
+import Segment from '../src/Segment'
 
 import { describe, it } from 'mocha'
 import { expect } from 'chai'
