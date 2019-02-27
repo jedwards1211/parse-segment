@@ -24,8 +24,8 @@ describe(`SegmentParser`, function() {
       parser.index = 5
       const match = parser.match(/\s+/, 'missing whitespace')
       expect(match).to.deep.equal(['  '])
+      expect(match.segment).to.deep.equal(parser.segment.substring(5, 7))
       expect(match.index).to.equal(5)
-      expect(parser.prevSegment()).to.deep.equal(parser.segment.substring(5, 7))
     })
     it(`throws error when match not found at index`, function() {
       const parser = new SegmentParser(
@@ -56,10 +56,6 @@ a b c  d e
       parser.index = 5
       parser.skip(/\s+/gm)
       expect(parser.index).to.equal(7)
-      expect(() => parser.prevSegment()).to.throw(
-        Error,
-        'there is no previous segment'
-      )
     })
     it(`does nothing if match doesn't exist`, function() {
       const parser = new SegmentParser(
