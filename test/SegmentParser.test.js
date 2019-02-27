@@ -128,6 +128,52 @@ foo bar baz
       )
     })
   })
+  describe(`.expectIgnoreCase`, function() {
+    it(`moves past str if present at index`, function() {
+      const parser = new SegmentParser(
+        new Segment({
+          value: 'foo bar baz',
+          source: 'file.txt',
+          startLine: 5,
+        })
+      )
+      parser.index = 4
+      parser.expectIgnoreCase('baR')
+      expect(parser.index).to.equal(7)
+    })
+    it(`throws if str not present at index`, function() {
+      const parser = new SegmentParser(
+        new Segment({
+          value: 'foo bar baz',
+          source: 'file.txt',
+          startLine: 5,
+        })
+      )
+      parser.index = 3
+      expect(() => parser.expectIgnoreCase('bar')).to.throw(
+        SegmentParseError,
+        `expected bar (file.txt, line 6, col 4)
+foo bar baz
+   ^`
+      )
+    })
+    it(`throws if str not present`, function() {
+      const parser = new SegmentParser(
+        new Segment({
+          value: 'foo bar baz',
+          source: 'file.txt',
+          startLine: 5,
+        })
+      )
+      parser.index = 4
+      expect(() => parser.expectIgnoreCase('bog')).to.throw(
+        SegmentParseError,
+        `expected bog (file.txt, line 6, col 5)
+foo bar baz
+    ^`
+      )
+    })
+  })
   describe(`.nextDelimited`, function() {
     it(`returns text up to match`, function() {
       const parser = new SegmentParser(

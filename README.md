@@ -154,3 +154,7 @@ from the current `index` all the way to the end.
 
 Checks if `segment` contains `str` at the current `index`. If so, moves `index` past it.
 If not, throws a `SegmentParseError` with `messageIfMissing`.
+
+### `.expectIgnoreCase(str: String, messageIfMissing: string): void`
+
+Same as `.expect`, but performs a case-insensitive comparison.

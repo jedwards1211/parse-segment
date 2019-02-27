@@ -70,4 +70,18 @@ export default class SegmentParser {
     }
     this.index += str.length
   }
+
+  expectIgnoreCase(str: string, messageIfMissing: string = `expected ${str}`) {
+    if (
+      this.segment.value
+        .substring(this.index, this.index + str.length)
+        .toLowerCase() !== str.toLowerCase()
+    ) {
+      throw new SegmentParseError(
+        messageIfMissing,
+        this.segment.charAt(this.index)
+      )
+    }
+    this.index += str.length
+  }
 }
