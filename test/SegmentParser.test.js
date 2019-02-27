@@ -54,7 +54,7 @@ a b c  d e
         })
       )
       parser.index = 5
-      parser.skip(/\s+/gm)
+      expect(parser.skip(/\s+/gm)).to.be.true
       expect(parser.index).to.equal(7)
     })
     it(`does nothing if match doesn't exist`, function() {
@@ -66,7 +66,7 @@ a b c  d e
         })
       )
       parser.index = 4
-      parser.skip(/q/gm)
+      expect(parser.skip(/q/gm)).to.be.false
       expect(parser.index).to.equal(4)
     })
     it(`does nothing if match isn't at index`, function() {
@@ -78,7 +78,7 @@ a b c  d e
         })
       )
       parser.index = 4
-      parser.skip(/\s+/gm)
+      expect(parser.skip(/\s+/gm)).to.be.false
       expect(parser.index).to.equal(4)
     })
   })

@@ -134,7 +134,8 @@ The current parse position within `segment`.
 
 ### `.skip(rx: RegExp)`
 
-Moves `index` past the next occurrence of `rx`.
+Moves `index` past the next occurrence of `rx`. Returns `true` if anything was
+skipped, `false` otherwise.
 
 ### `.match(rx: RegExp, messageIfMissing: string): RegExp$matchResult & { segment: Segment }`
 

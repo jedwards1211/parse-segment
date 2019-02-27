@@ -12,12 +12,14 @@ export default class SegmentParser {
     this.index = 0
   }
 
-  skip(rx: RegExp) {
+  skip(rx: RegExp): boolean {
     rx.lastIndex = this.index
     const match = rx.exec(this.segment.value)
     if (match && match.index === this.index) {
       this.index += match[0].length
+      return true
     }
+    return false
   }
 
   nextDelimited(rx: RegExp, messageIfMissing?: string): Segment {
