@@ -128,4 +128,51 @@ foo bar baz
       )
     })
   })
+  describe(`.nextDelimited`, function() {
+    it(`returns text up to match`, function() {
+      const parser = new SegmentParser(
+        new Segment({
+          value: 'a b c  d e f g h',
+          source: 'file.txt',
+          startLine: 5,
+        })
+      )
+      parser.index = 5
+      const segment = parser.nextDelimited(/e/, 'missing e')
+      expect(segment).to.deep.equal(
+        parser.segment.substring(5, parser.segment.indexOf('e'))
+      )
+      expect(parser.index).to.equal(parser.segment.indexOf('e') + 1)
+    })
+    it(`throws error when match not found`, function() {
+      const parser = new SegmentParser(
+        new Segment({
+          value: 'a b c  d e',
+          source: 'file.txt',
+          startLine: 5,
+        })
+      )
+      parser.index = 4
+      expect(() => parser.nextDelimited(/f/, 'missing f')).to.throw(
+        SegmentParseError,
+        `missing f (file.txt, line 6, col 11)
+a b c  d e
+          ^`
+      )
+    })
+    it(`returns up to end if no match found and messageIfMissing == null`, function() {
+      const parser = new SegmentParser(
+        new Segment({
+          value: 'a b c  d e',
+          source: 'file.txt',
+          startLine: 5,
+        })
+      )
+      parser.index = 4
+      expect(parser.nextDelimited(/f/)).to.deep.equal(
+        parser.segment.substring(4)
+      )
+      expect(parser.index).to.equal(parser.segment.length)
+    })
+  })
 })

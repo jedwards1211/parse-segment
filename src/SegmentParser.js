@@ -20,6 +20,26 @@ export default class SegmentParser {
     }
   }
 
+  nextDelimited(rx: RegExp, messageIfMissing?: string): Segment {
+    if (!rx.global) rx = new RegExp(rx, rx.flags + 'g')
+    rx.lastIndex = this.index
+    const match = rx.exec(this.segment.value)
+    if (!match) {
+      if (messageIfMissing == null) {
+        const segment = this.segment.substring(this.index)
+        this.index = this.segment.length
+        return segment
+      }
+      throw new SegmentParseError(
+        messageIfMissing,
+        this.segment.substring(this.segment.length)
+      )
+    }
+    const segment = this.segment.substring(this.index, match.index)
+    this.index = match.index + match[0].length
+    return segment
+  }
+
   match(
     rx: RegExp,
     messageIfMissing: string

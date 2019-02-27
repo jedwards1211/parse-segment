@@ -141,6 +141,15 @@ Moves `index` past the next occurrence of `rx`.
 Checks if `segment` has a match for `rx` at the current `index`. If so, returns it and moves `index` past it.
 If not, throws a `SegmentParseError` with `messageIfMissing`.
 
+### `.nextDelimited(rx: RegExp, messageIfMissing?: string): Segment`
+
+Moves the `index` past the next match for `rx`, and returns the sub-`Segment`
+from the starting `index` up to the match. For example, `.nextDelimited(/\r\n?|\n/mg)`
+will return the rest of the current line and move to the next line. If
+`messageIfMissing` is given, will throw a `SegmentParseError` if no match for `rx`
+is found beyond the current `index`. Otherwise, it will return the sub-`Segment`
+from the current `index` all the way to the end.
+
 ### `.expect(str: String, messageIfMissing: string): void`
 
 Checks if `segment` contains `str` at the current `index`. If so, moves `index` past it.
