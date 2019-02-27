@@ -60,8 +60,9 @@ export default class SegmentParser {
   }
 
   expect(str: string, messageIfMissing: string = `expected ${str}`) {
-    const nextIndex = this.segment.indexOf(str, this.index)
-    if (nextIndex < 0 || nextIndex !== this.index) {
+    if (
+      this.segment.value.substring(this.index, this.index + str.length) !== str
+    ) {
       throw new SegmentParseError(
         messageIfMissing,
         this.segment.charAt(this.index)
