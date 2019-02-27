@@ -35,7 +35,7 @@ export default class SegmentParser {
     }
     const nextIndex = this.index + match[0].length
     const segment = this.segment.substring(this.index, nextIndex)
-    this.index += nextIndex
+    this.index = nextIndex
     return Object.assign((match: any), { segment })
   }
 
