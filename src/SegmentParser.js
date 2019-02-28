@@ -3,6 +3,14 @@
 import Segment from './Segment'
 import SegmentParseError from './SegmentParseError'
 
+function addFlags(rx: RegExp): RegExp {
+  if (rx.global && rx.sticky) return rx
+  let { flags } = rx
+  if (!rx.global) flags += 'g'
+  if (!rx.sticky) flags += 'y'
+  return new RegExp(rx, flags)
+}
+
 export default class SegmentParser {
   segment: Segment
   index: number
@@ -13,6 +21,7 @@ export default class SegmentParser {
   }
 
   skip(rx: RegExp): boolean {
+    rx = addFlags(rx)
     rx.lastIndex = this.index
     const match = rx.exec(this.segment.value)
     if (match && match.index === this.index) {
@@ -46,7 +55,7 @@ export default class SegmentParser {
     rx: RegExp,
     messageIfMissing: string
   ): RegExp$matchResult & { segment: Segment } {
-    if (!rx.global) rx = new RegExp(rx, rx.flags + 'g')
+    rx = addFlags(rx)
     rx.lastIndex = this.index
     const match = rx.exec(this.segment.value)
     if (!match || match.index !== this.index) {
