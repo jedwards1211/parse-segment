@@ -218,7 +218,8 @@ export default class Segment {
     }
 
     let newStartLine = this._lastSubstringLine
-    let newStartCol = this._lastSubstringCol
+    let newStartCol =
+      this._lastSubstringCol + beginIndex - this._lastSubstringIndex
 
     LINE_BREAK.lastIndex = this._lastSubstringIndex
     let match

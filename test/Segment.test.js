@@ -29,7 +29,6 @@ describe('Segment', () => {
       let s
 
       s = source.substring(13, 28)
-      expect(s.startLine)
       expect(s.value).to.equal(source.value.substring(13, 28))
       expect(s.sourceIndex).to.equal(13)
       expect(s.startLine).to.equal(6)
@@ -73,18 +72,21 @@ describe('Segment', () => {
 
       let parts
       parts = source.split('a')
-      expect(parts).to.deep.equal([
-        source.substring(0, 5),
-        source.substring(6, 9),
-        source.substring(10, 26),
-        source.substring(27),
-      ])
+      expect(parts).to.deep.equal(
+        // go in reverse to kill a stateful optimization in substring
+        // that was causing bugs
+        [
+          source.substring(27),
+          source.substring(10, 26),
+          source.substring(6, 9),
+          source.substring(0, 5),
+        ].reverse()
+      )
 
       parts = source.split('a', 2)
-      expect(parts).to.deep.equal([
-        source.substring(0, 5),
-        source.substring(6, 9),
-      ])
+      expect(parts).to.deep.equal(
+        [source.substring(6, 9), source.substring(0, 5)].reverse()
+      )
 
       parts = source.split('a', 0)
       expect(parts).to.deep.equal([])
