@@ -221,4 +221,77 @@ a b c  d e
       expect(parser.index).to.equal(parser.segment.length)
     })
   })
+  describe(`.currentChar`, function() {
+    it(`works`, function() {
+      const parser = new SegmentParser(
+        new Segment({
+          value: 'a b c  d e',
+          source: 'file.txt',
+          startLine: 5,
+        })
+      )
+      parser.index = 4
+      expect(parser.currentChar()).to.equal('c')
+    })
+  })
+  describe(`.isAtEnd`, function() {
+    it(`returns true when at end`, function() {
+      const parser = new SegmentParser(
+        new Segment({
+          value: 'a b c  d e',
+          source: 'file.txt',
+          startLine: 5,
+        })
+      )
+      parser.index = parser.segment.length
+      expect(parser.isAtEnd()).to.be.true
+    })
+    it(`returns false when not at end`, function() {
+      const parser = new SegmentParser(
+        new Segment({
+          value: 'a b c  d e',
+          source: 'file.txt',
+          startLine: 5,
+        })
+      )
+      parser.index = parser.segment.length - 1
+      expect(parser.isAtEnd()).to.be.false
+    })
+  })
+  describe(`.isAtEndOfLine`, function() {
+    it(`returns true when at end of line`, function() {
+      const parser = new SegmentParser(
+        new Segment({
+          value: 'hello\nworld\rfoo',
+          source: 'file.txt',
+          startLine: 5,
+        })
+      )
+      parser.index = parser.segment.indexOf('\n')
+      expect(parser.isAtEndOfLine()).to.be.true
+      parser.index = parser.segment.indexOf('\r')
+      expect(parser.isAtEndOfLine()).to.be.true
+      parser.index = parser.segment.length
+      expect(parser.isAtEndOfLine()).to.be.true
+    })
+    it(`returns false when not at end of line`, function() {
+      const parser = new SegmentParser(
+        new Segment({
+          value: 'hello\nworld\rfoo',
+          source: 'file.txt',
+          startLine: 5,
+        })
+      )
+      parser.index = parser.segment.indexOf('\n') - 1
+      expect(parser.isAtEndOfLine()).to.be.false
+      parser.index = parser.segment.indexOf('\n') + 1
+      expect(parser.isAtEndOfLine()).to.be.false
+      parser.index = parser.segment.indexOf('\r') - 1
+      expect(parser.isAtEndOfLine()).to.be.false
+      parser.index = parser.segment.indexOf('\r') + 1
+      expect(parser.isAtEndOfLine()).to.be.false
+      parser.index = parser.segment.length - 1
+      expect(parser.isAtEndOfLine()).to.be.false
+    })
+  })
 })

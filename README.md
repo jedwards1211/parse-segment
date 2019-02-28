@@ -159,3 +159,17 @@ If not, throws a `SegmentParseError` with `messageIfMissing`.
 ### `.expectIgnoreCase(str: String, messageIfMissing: string): void`
 
 Same as `.expect`, but performs a case-insensitive comparison.
+
+### `.currentChar(): string`
+
+Returns a string containing only the character at the current `index`.
+
+### `.isAtEnd(): boolean`
+
+Returns `true` if the current `index` is at the end of the `segment`, `false`
+otherwise.
+
+### `.isAtEndOfLine(): boolean`
+
+Returns `true` if the current `index` is at the end of a line, `false`
+otherwise.

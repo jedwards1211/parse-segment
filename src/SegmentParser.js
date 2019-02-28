@@ -86,4 +86,16 @@ export default class SegmentParser {
     }
     this.index += str.length
   }
+
+  currentChar(): string {
+    return this.segment.value.charAt(this.index)
+  }
+
+  isAtEndOfLine(): boolean {
+    return this.isAtEnd() || /[\r\n]/.test(this.currentChar())
+  }
+
+  isAtEnd(): boolean {
+    return this.index >= this.segment.length
+  }
 }
