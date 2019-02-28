@@ -13,7 +13,7 @@ type Options = {
   _endCol?: number,
 }
 
-const LINE_BREAK = /\r\n?|\n/g
+const LINE_BREAK = /\r\n?|\n/gm
 
 export default class Segment {
   +value: string
@@ -25,6 +25,9 @@ export default class Segment {
   +startCol: number
   +endCol: number
   +length: number
+  _lastSubstringIndex: number
+  _lastSubstringLine: number
+  _lastSubstringCol: number
 
   constructor({
     sourceSegment,
@@ -120,6 +123,24 @@ export default class Segment {
         configurable: false,
         enumerable: false,
       },
+      _lastSubstringIndex: {
+        value: 0,
+        writable: true,
+        configurable: false,
+        enumerable: false,
+      },
+      _lastSubstringLine: {
+        value: startLine,
+        writable: true,
+        configurable: false,
+        enumerable: false,
+      },
+      _lastSubstringCol: {
+        value: startCol,
+        writable: true,
+        configurable: false,
+        enumerable: false,
+      },
     })
   }
 
@@ -190,24 +211,23 @@ export default class Segment {
       })
     }
 
-    let newStartLine = startLine
-    let newStartCol = startCol + beginIndex
-
-    let toIndex = beginIndex
-    if (
-      toIndex < this.length &&
-      toIndex > 0 &&
-      value.charAt(toIndex) == '\n' &&
-      value.charAt(toIndex - 1) == '\r'
-    ) {
-      toIndex--
+    if (beginIndex < this._lastSubstringIndex) {
+      this._lastSubstringIndex = 0
+      this._lastSubstringLine = startLine
+      this._lastSubstringCol = startCol
     }
 
-    LINE_BREAK.lastIndex = 0
+    let newStartLine = this._lastSubstringLine
+    let newStartCol = this._lastSubstringCol
+
+    LINE_BREAK.lastIndex = this._lastSubstringIndex
     let match
     while ((match = LINE_BREAK.exec(value)) && match.index < beginIndex) {
       newStartLine++
       newStartCol = beginIndex - match.index - match[0].length
+      this._lastSubstringIndex = match.index + match[0].length
+      this._lastSubstringLine++
+      this._lastSubstringCol = 0
     }
 
     return new Segment({
