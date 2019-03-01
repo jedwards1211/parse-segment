@@ -21,10 +21,10 @@ export default class Segment {
   +sourceIndex: number
   +sourceSegment: ?Segment
   +startLine: number
-  +endLine: number
   +startCol: number
-  +endCol: number
   +length: number
+  _endLine: number
+  _endCol: number
   _lastSubstringIndex: number
   _lastSubstringLine: number
   _lastSubstringCol: number
@@ -36,112 +36,44 @@ export default class Segment {
     source,
     startLine,
     startCol,
-    _endLine,
-    _endCol,
   }: Options) {
-    if (startLine == null) startLine = 0
-    if (startCol == null) startCol = 0
-    let endLine
-    let endCol
-    if (_endLine != null && _endCol != null) {
-      endLine = _endLine
-      endCol = _endCol
-    } else {
-      endLine = startLine
-      endCol = startCol + value.length - 1
-      let match
-      LINE_BREAK.lastIndex = 0
-      while (
-        (match = LINE_BREAK.exec(value)) &&
-        match.index + match[0].length < value.length
-      ) {
-        endLine++
-        endCol = value.length - match[0].length - match.index - 1
-      }
-      this.endLine = endLine
-      this.endCol = endCol
+    this.value = value
+    this.source = source
+    this.sourceSegment = sourceSegment
+    this.sourceIndex = sourceIndex != null ? sourceIndex : -1
+    this.startLine = this._lastSubstringLine = startLine || 0
+    this.startCol = this._lastSubstringCol = startCol || 0
+    this._endLine = this._endCol = -1
+    this._lastSubstringIndex = 0
+  }
+
+  get length(): number {
+    return this.value.length
+  }
+
+  _computeEnd() {
+    this._endLine = this.startLine
+    this._endCol = this.startCol + this.length - 1
+
+    LINE_BREAK.lastIndex = 0
+    let match
+    while (
+      (match = LINE_BREAK.exec(this.value)) &&
+      match.index + match[0].length < this.length
+    ) {
+      this._endLine++
+      this._endCol = this.length - match.index - match[0].length - 1
     }
-    Object.defineProperties((this: any), {
-      value: {
-        value,
-        writable: false,
-        configurable: false,
-        enumerable: true,
-      },
-      length: {
-        value: value.length,
-        writable: false,
-        configurable: false,
-        enumerable: false,
-      },
-      sourceSegment: {
-        value: sourceSegment,
-        writable: false,
-        configurable: false,
-        enumerable: true,
-      },
-      sourceIndex: {
-        value: sourceIndex != null ? sourceIndex : -1,
-        writable: false,
-        configurable: false,
-        enumerable: true,
-      },
-      source: {
-        value: source,
-        writable: false,
-        configurable: false,
-        enumerable: true,
-      },
-      startLine: {
-        value: startLine,
-        writable: false,
-        configurable: false,
-        enumerable: true,
-      },
-      startCol: {
-        value: startCol,
-        writable: false,
-        configurable: false,
-        enumerable: true,
-      },
-      endLine: {
-        value: endLine,
-        writable: false,
-        configurable: false,
-        enumerable: true,
-      },
-      endCol: {
-        value: endCol,
-        writable: false,
-        configurable: false,
-        enumerable: true,
-      },
-      [Symbol.toStringTag]: {
-        get(): string {
-          return value
-        },
-        configurable: false,
-        enumerable: false,
-      },
-      _lastSubstringIndex: {
-        value: 0,
-        writable: true,
-        configurable: false,
-        enumerable: false,
-      },
-      _lastSubstringLine: {
-        value: startLine,
-        writable: true,
-        configurable: false,
-        enumerable: false,
-      },
-      _lastSubstringCol: {
-        value: startCol,
-        writable: true,
-        configurable: false,
-        enumerable: false,
-      },
-    })
+  }
+
+  get endLine(): number {
+    if (this._endLine < 0) this._computeEnd()
+    return this._endLine
+  }
+
+  get endCol(): number {
+    if (this._endCol < 0) this._computeEnd()
+    return this._endCol
   }
 
   charAt(index: number): Segment {
@@ -195,22 +127,8 @@ export default class Segment {
       source,
       startLine,
       startCol,
-      endLine,
       value,
     } = this
-    if (startLine == endLine) {
-      return new Segment({
-        sourceSegment: sourceSegment != null ? sourceSegment : this,
-        sourceIndex: sourceIndex >= 0 ? sourceIndex + beginIndex : beginIndex,
-        value: value.substring(beginIndex, endIndex),
-        source,
-        startLine,
-        startCol: startCol + beginIndex,
-        endLine,
-        endCol: startCol + endIndex - 1,
-      })
-    }
-
     if (beginIndex < this._lastSubstringIndex) {
       this._lastSubstringIndex = 0
       this._lastSubstringLine = startLine
