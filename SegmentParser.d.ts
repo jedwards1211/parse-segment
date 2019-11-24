@@ -12,8 +12,8 @@ export default class SegmentParser {
     rx: RegExp,
     messageIfMissing: string
   ): RegExpMatchArray & { segment: Segment }
-  expect(str: string, messageIfMissing?: string)
-  expectIgnoreCase(str: string, messageIfMissing?: string)
+  expect(str: string, messageIfMissing?: string): void
+  expectIgnoreCase(str: string, messageIfMissing?: string): void
   currentChar(): string
   isAtEndOfLine(): boolean
   isAtEnd(): boolean
