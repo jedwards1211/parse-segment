@@ -217,10 +217,9 @@ export default class Segment {
   trim(): Segment {
     const startMatch = /^\s*/.exec(this.value)
     const endMatch = /\s*$/.exec(this.value)
-    return this.substring(
-      startMatch ? startMatch.index + startMatch[0].length : 0,
-      endMatch ? endMatch.index : this.length
-    )
+    const from = startMatch ? startMatch.index + startMatch[0].length : 0
+    const to = endMatch ? endMatch.index : this.length
+    return to < from ? this.substring(0, 0) : this.substring(from, to)
   }
 
   underlineInContext(): string {

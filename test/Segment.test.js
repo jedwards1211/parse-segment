@@ -95,6 +95,15 @@ describe('Segment', () => {
       expect(parts).to.deep.equal([source.substring(0, 5), source.substring(6)])
     })
     describe(`trim/trimStart/trimEnd`, function() {
+      it('bug', function() {
+        const source = new Segment({
+          value: ' ',
+          source: 'foo.txt',
+          startLine: 5,
+          startCol: 0,
+        })
+        expect(source.trim()).to.deep.equal(source.substring(0, 0))
+      })
       it(`works`, function() {
         const source = new Segment({
           value: '  foo bar  \r\n  baz qux    ',
