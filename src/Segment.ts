@@ -1,34 +1,26 @@
-/* @flow */
-
-import { EOL } from 'os'
-
-type Options = {
-  value: string,
-  source: any,
-  sourceIndex?: ?number,
-  sourceSegment?: ?Segment,
-  startLine?: number,
-  startCol?: number,
-  _endLine?: number,
-  _endCol?: number,
+export type SegmentOptions = {
+  value: string
+  source: any
+  sourceIndex?: number | null | undefined
+  sourceSegment?: Segment | null | undefined
+  startLine?: number
+  startCol?: number
+  _endLine?: number
+  _endCol?: number
 }
-
 const LINE_BREAK = /\r\n?|\n/gm
-
 export default class Segment {
-  +value: string
-  +source: any
-  +sourceIndex: number
-  +sourceSegment: ?Segment
-  +startLine: number
-  +startCol: number
-  +length: number
+  readonly value: string
+  readonly source: any
+  readonly sourceIndex: number
+  readonly sourceSegment: Segment | null | undefined
+  readonly startLine: number
+  readonly startCol: number
   _endLine: number
   _endCol: number
   _lastSubstringIndex: number
   _lastSubstringLine: number
   _lastSubstringCol: number
-
   constructor({
     sourceSegment,
     sourceIndex,
@@ -36,7 +28,7 @@ export default class Segment {
     source,
     startLine,
     startCol,
-  }: Options) {
+  }: SegmentOptions) {
     this.value = value
     this.source = source
     this.sourceSegment = sourceSegment
@@ -46,15 +38,12 @@ export default class Segment {
     this._endLine = this._endCol = -1
     this._lastSubstringIndex = 0
   }
-
   get length(): number {
     return this.value.length
   }
-
   _computeEnd() {
     this._endLine = this.startLine
     this._endCol = this.startCol + this.length - 1
-
     LINE_BREAK.lastIndex = 0
     let match
     while (
@@ -65,24 +54,21 @@ export default class Segment {
       this._endCol = this.length - match.index - match[0].length - 1
     }
   }
-
   get endLine(): number {
     if (this._endLine < 0) this._computeEnd()
     return this._endLine
   }
-
   get endCol(): number {
     if (this._endCol < 0) this._computeEnd()
     return this._endCol
   }
-
   charAt(index: number): Segment {
     return this.substring(index, Math.min(index + 1, this.length))
   }
   charCodeAt(index: number): number {
     return this.value.charCodeAt(index)
   }
-  codePointAt(index: number): number {
+  codePointAt(index: number): number | undefined {
     return this.value.codePointAt(index)
   }
   endsWith(search: string, length?: number): boolean {
@@ -100,11 +86,11 @@ export default class Segment {
   localeCompare(
     that: string,
     locales?: string | Array<string>,
-    options?: Intl$CollatorOptions
+    options?: Intl.CollatorOptions
   ): number {
     return this.value.localeCompare(that, locales, options)
   }
-  match(regexp: RegExp): RegExp$matchResult | null {
+  match(regexp: RegExp): RegExpMatchArray | null {
     return this.value.match(regexp)
   }
   search(regexp: RegExp): number {
@@ -119,26 +105,17 @@ export default class Segment {
   startsWith(search: string, position?: number): boolean {
     return this.value.startsWith(search, position)
   }
-
-  substring(beginIndex: number, endIndex?: number = this.length): Segment {
-    const {
-      sourceSegment,
-      sourceIndex,
-      source,
-      startLine,
-      startCol,
-      value,
-    } = this
+  substring(beginIndex: number, endIndex: number = this.length): Segment {
+    const { sourceSegment, sourceIndex, source, startLine, startCol, value } =
+      this
     if (beginIndex < this._lastSubstringIndex) {
       this._lastSubstringIndex = 0
       this._lastSubstringLine = startLine
       this._lastSubstringCol = startCol
     }
-
     let newStartLine = this._lastSubstringLine
     let newStartCol =
       this._lastSubstringCol + beginIndex - this._lastSubstringIndex
-
     LINE_BREAK.lastIndex = this._lastSubstringIndex
     let match
     while ((match = LINE_BREAK.exec(value)) && match.index < beginIndex) {
@@ -148,7 +125,6 @@ export default class Segment {
       this._lastSubstringLine++
       this._lastSubstringCol = 0
     }
-
     return new Segment({
       sourceSegment: sourceSegment != null ? sourceSegment : this,
       sourceIndex: sourceIndex >= 0 ? sourceIndex + beginIndex : beginIndex,
@@ -158,12 +134,11 @@ export default class Segment {
       startCol: newStartCol,
     })
   }
-
   split(
     separator: RegExp | Array<string> | string,
     limit?: number
   ): Array<Segment> {
-    let result: Array<Segment> = []
+    const result: Array<Segment> = []
     if (separator instanceof RegExp) {
       let lastIndex = 0
       let match
@@ -193,27 +168,22 @@ export default class Segment {
     }
     return result
   }
-
   toString(): string {
     return this.value
   }
-
   valueOf(): string {
     return this.value
   }
-
   trimStart(): Segment {
     const startMatch = /^\s*/.exec(this.value)
     return this.substring(
       startMatch ? startMatch.index + startMatch[0].length : 0
     )
   }
-
   trimEnd(): Segment {
     const endMatch = /\s*$/.exec(this.value)
     return this.substring(0, endMatch ? endMatch.index : this.length)
   }
-
   trim(): Segment {
     const startMatch = /^\s*/.exec(this.value)
     const endMatch = /\s*$/.exec(this.value)
@@ -221,18 +191,12 @@ export default class Segment {
     const to = endMatch ? endMatch.index : this.length
     return to < from ? this.substring(0, 0) : this.substring(from, to)
   }
-
   underlineInContext(): string {
     const chunks: Array<string> = []
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     let context: Segment = this
-    const {
-      sourceSegment,
-      sourceIndex,
-      startLine,
-      startCol,
-      endLine,
-      endCol,
-    } = this
+    const { sourceSegment, sourceIndex, startLine, startCol, endLine, endCol } =
+      this
     if (sourceSegment != null) {
       // beginning of this segment's first line
       const start = sourceIndex - startCol
@@ -244,13 +208,12 @@ export default class Segment {
       context = sourceSegment.substring(start, end)
     }
     const lines: Array<Segment> = context.split(LINE_BREAK)
-
-    for (const line: Segment of lines) {
+    for (const line of lines) {
       if (line.startLine < startLine || line.startLine > endLine) {
         continue
       }
       chunks.push(line.value)
-      chunks.push(EOL)
+      chunks.push('\n')
       let k = 0
       if (startLine == line.startLine) {
         while (k < startCol) {
@@ -277,7 +240,7 @@ export default class Segment {
         }
       }
       if (line.startLine < endLine) {
-        chunks.push(EOL)
+        chunks.push('\n')
       }
     }
     return chunks.join('')

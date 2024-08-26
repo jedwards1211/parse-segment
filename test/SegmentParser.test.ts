@@ -1,19 +1,11 @@
-/**
- * @flow
- * @prettier
- */
-
 import { describe, it } from 'mocha'
 import { expect } from 'chai'
-
 import Segment from '../src/Segment'
 import SegmentParser from '../src/SegmentParser'
-
 import SegmentParseError from '../src/SegmentParseError'
-
-describe(`SegmentParser`, function() {
-  describe(`.match`, function() {
-    it(`returns match when found at index`, function() {
+describe(`SegmentParser`, function () {
+  describe(`.match`, function () {
+    it(`returns match when found at index`, function () {
       const parser = new SegmentParser(
         new Segment({
           value: 'a b c  d e',
@@ -27,7 +19,7 @@ describe(`SegmentParser`, function() {
       expect(match.segment).to.deep.equal(parser.segment.substring(5, 7))
       expect(match.index).to.equal(5)
     })
-    it(`throws error when match not found at index`, function() {
+    it(`throws error when match not found at index`, function () {
       const parser = new SegmentParser(
         new Segment({
           value: 'a b c  d e',
@@ -44,8 +36,8 @@ a b c  d e
       )
     })
   })
-  describe(`.skip`, function() {
-    it(`moves past match if it exists`, function() {
+  describe(`.skip`, function () {
+    it(`moves past match if it exists`, function () {
       const parser = new SegmentParser(
         new Segment({
           value: 'a b c  d e',
@@ -57,7 +49,7 @@ a b c  d e
       expect(parser.skip(/\s+/gm)).to.be.true
       expect(parser.index).to.equal(7)
     })
-    it(`does nothing if match doesn't exist`, function() {
+    it(`does nothing if match doesn't exist`, function () {
       const parser = new SegmentParser(
         new Segment({
           value: 'a b c  d e',
@@ -69,7 +61,7 @@ a b c  d e
       expect(parser.skip(/q/gm)).to.be.false
       expect(parser.index).to.equal(4)
     })
-    it(`does nothing if match isn't at index`, function() {
+    it(`does nothing if match isn't at index`, function () {
       const parser = new SegmentParser(
         new Segment({
           value: 'a b c  d e',
@@ -82,8 +74,8 @@ a b c  d e
       expect(parser.index).to.equal(4)
     })
   })
-  describe(`.expect`, function() {
-    it(`moves past str if present at index`, function() {
+  describe(`.expect`, function () {
+    it(`moves past str if present at index`, function () {
       const parser = new SegmentParser(
         new Segment({
           value: 'foo bar baz',
@@ -95,7 +87,7 @@ a b c  d e
       parser.expect('bar')
       expect(parser.index).to.equal(7)
     })
-    it(`throws if str not present at index`, function() {
+    it(`throws if str not present at index`, function () {
       const parser = new SegmentParser(
         new Segment({
           value: 'foo bar baz',
@@ -111,7 +103,7 @@ foo bar baz
    ^`
       )
     })
-    it(`throws if str not present`, function() {
+    it(`throws if str not present`, function () {
       const parser = new SegmentParser(
         new Segment({
           value: 'foo bar baz',
@@ -128,8 +120,8 @@ foo bar baz
       )
     })
   })
-  describe(`.expectIgnoreCase`, function() {
-    it(`moves past str if present at index`, function() {
+  describe(`.expectIgnoreCase`, function () {
+    it(`moves past str if present at index`, function () {
       const parser = new SegmentParser(
         new Segment({
           value: 'foo bar baz',
@@ -141,7 +133,7 @@ foo bar baz
       parser.expectIgnoreCase('baR')
       expect(parser.index).to.equal(7)
     })
-    it(`throws if str not present at index`, function() {
+    it(`throws if str not present at index`, function () {
       const parser = new SegmentParser(
         new Segment({
           value: 'foo bar baz',
@@ -157,7 +149,7 @@ foo bar baz
    ^`
       )
     })
-    it(`throws if str not present`, function() {
+    it(`throws if str not present`, function () {
       const parser = new SegmentParser(
         new Segment({
           value: 'foo bar baz',
@@ -174,8 +166,8 @@ foo bar baz
       )
     })
   })
-  describe(`.nextDelimited`, function() {
-    it(`returns text up to match`, function() {
+  describe(`.nextDelimited`, function () {
+    it(`returns text up to match`, function () {
       const parser = new SegmentParser(
         new Segment({
           value: 'a b c  d e f g h',
@@ -190,7 +182,7 @@ foo bar baz
       )
       expect(parser.index).to.equal(parser.segment.indexOf('e') + 1)
     })
-    it(`throws error when match not found`, function() {
+    it(`throws error when match not found`, function () {
       const parser = new SegmentParser(
         new Segment({
           value: 'a b c  d e',
@@ -206,7 +198,7 @@ a b c  d e
           ^`
       )
     })
-    it(`returns up to end if no match found and messageIfMissing == null`, function() {
+    it(`returns up to end if no match found and messageIfMissing == null`, function () {
       const parser = new SegmentParser(
         new Segment({
           value: 'a b c  d e',
@@ -221,8 +213,8 @@ a b c  d e
       expect(parser.index).to.equal(parser.segment.length)
     })
   })
-  describe(`.currentChar`, function() {
-    it(`works`, function() {
+  describe(`.currentChar`, function () {
+    it(`works`, function () {
       const parser = new SegmentParser(
         new Segment({
           value: 'a b c  d e',
@@ -234,8 +226,8 @@ a b c  d e
       expect(parser.currentChar()).to.equal('c')
     })
   })
-  describe(`.isAtEnd`, function() {
-    it(`returns true when at end`, function() {
+  describe(`.isAtEnd`, function () {
+    it(`returns true when at end`, function () {
       const parser = new SegmentParser(
         new Segment({
           value: 'a b c  d e',
@@ -246,7 +238,7 @@ a b c  d e
       parser.index = parser.segment.length
       expect(parser.isAtEnd()).to.be.true
     })
-    it(`returns false when not at end`, function() {
+    it(`returns false when not at end`, function () {
       const parser = new SegmentParser(
         new Segment({
           value: 'a b c  d e',
@@ -258,8 +250,8 @@ a b c  d e
       expect(parser.isAtEnd()).to.be.false
     })
   })
-  describe(`.isAtEndOfLine`, function() {
-    it(`returns true when at end of line`, function() {
+  describe(`.isAtEndOfLine`, function () {
+    it(`returns true when at end of line`, function () {
       const parser = new SegmentParser(
         new Segment({
           value: 'hello\nworld\rfoo',
@@ -274,7 +266,7 @@ a b c  d e
       parser.index = parser.segment.length
       expect(parser.isAtEndOfLine()).to.be.true
     })
-    it(`returns false when not at end of line`, function() {
+    it(`returns false when not at end of line`, function () {
       const parser = new SegmentParser(
         new Segment({
           value: 'hello\nworld\rfoo',

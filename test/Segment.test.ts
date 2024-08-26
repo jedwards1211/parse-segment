@@ -1,13 +1,9 @@
-// @flow
-
 import Segment from '../src/Segment'
-
 import { describe, it } from 'mocha'
 import { expect } from 'chai'
-
 describe('Segment', () => {
-  describe(`constructor`, function() {
-    it(`works`, function() {
+  describe(`constructor`, function () {
+    it(`works`, function () {
       const s = new Segment({
         value: 'foo bar baz\r\n qux\nthis is a\rtest',
         source: 'foo.txt',
@@ -18,16 +14,15 @@ describe('Segment', () => {
       expect(s.endCol).to.equal(3)
     })
   })
-  describe(`substring`, function() {
-    it(`works`, function() {
+  describe(`substring`, function () {
+    it(`works`, function () {
       const source = new Segment({
         value: 'foo bar baz\r\n qux\nthis is a\ntest',
         source: 'foo.txt',
         startLine: 5,
         startCol: 3,
       })
-      let s
-
+      let s: any
       s = source.substring(13, 28)
       expect(s.value).to.equal(source.value.substring(13, 28))
       expect(s.sourceIndex).to.equal(13)
@@ -35,7 +30,6 @@ describe('Segment', () => {
       expect(s.startCol).to.equal(0)
       expect(s.endLine).to.equal(7)
       expect(s.endCol).to.equal('this is a'.length)
-
       s = source.substring(13, 29)
       expect(s.value).to.equal(source.value.substring(13, 29))
       expect(s.sourceIndex).to.equal(13)
@@ -43,7 +37,6 @@ describe('Segment', () => {
       expect(s.startCol).to.equal(0)
       expect(s.endLine).to.equal(8)
       expect(s.endCol).to.equal(0)
-
       s = source.substring(13, 32)
       expect(s.value).to.equal(source.value.substring(13, 32))
       expect(s.sourceIndex).to.equal(13)
@@ -51,7 +44,6 @@ describe('Segment', () => {
       expect(s.startCol).to.equal(0)
       expect(s.endLine).to.equal(8)
       expect(s.endCol).to.equal(3)
-
       s = source.substring(source.length)
       expect(s.value).to.equal('')
       expect(s.sourceIndex).to.equal(source.length)
@@ -61,16 +53,15 @@ describe('Segment', () => {
       expect(s.endCol).to.equal(source.endCol)
     })
   })
-  describe(`split`, function() {
-    it(`works`, function() {
+  describe(`split`, function () {
+    it(`works`, function () {
       const source = new Segment({
         value: 'foo bar baz\r\n qux\nthis is a\ntest',
         source: 'foo.txt',
         startLine: 5,
         startCol: 3,
       })
-
-      let parts
+      let parts: any
       parts = source.split('a')
       expect(parts).to.deep.equal(
         // go in reverse to kill a stateful optimization in substring
@@ -82,20 +73,17 @@ describe('Segment', () => {
           source.substring(0, 5),
         ].reverse()
       )
-
       parts = source.split('a', 2)
       expect(parts).to.deep.equal(
         [source.substring(6, 9), source.substring(0, 5)].reverse()
       )
-
       parts = source.split('a', 0)
       expect(parts).to.deep.equal([])
-
       parts = source.split(/a/)
       expect(parts).to.deep.equal([source.substring(0, 5), source.substring(6)])
     })
-    describe(`trim/trimStart/trimEnd`, function() {
-      it('bug', function() {
+    describe(`trim/trimStart/trimEnd`, function () {
+      it('bug', function () {
         const source = new Segment({
           value: ' ',
           source: 'foo.txt',
@@ -104,7 +92,7 @@ describe('Segment', () => {
         })
         expect(source.trim()).to.deep.equal(source.substring(0, 0))
       })
-      it(`works`, function() {
+      it(`works`, function () {
         const source = new Segment({
           value: '  foo bar  \r\n  baz qux    ',
           source: 'foo.txt',

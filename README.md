@@ -21,12 +21,7 @@ it came from
   source: 'foo.txt',
 })
 
-console.log(
-  data
-    .substring(32, 39)
-    .trim()
-    .underlineInContext()
-)
+console.log(data.substring(32, 39).trim().underlineInContext())
 ```
 
 Output:
